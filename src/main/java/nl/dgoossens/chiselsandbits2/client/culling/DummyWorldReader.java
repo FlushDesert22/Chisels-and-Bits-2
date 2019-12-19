@@ -6,22 +6,11 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IEnviromentBlockReader;
-import net.minecraft.world.LightType;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
-public class DummyEnvironmentWorldReader implements IEnviromentBlockReader {
-    public Biome getBiome(BlockPos pos) {
-        return Biomes.PLAINS;
-    }
-
-    public int getLightFor(LightType type, BlockPos pos) {
-        return type == LightType.SKY ? 15 : 0;
-    }
-
+public class DummyWorldReader implements IBlockReader {
     @Nullable
     public TileEntity getTileEntity(BlockPos pos) {
         return null;

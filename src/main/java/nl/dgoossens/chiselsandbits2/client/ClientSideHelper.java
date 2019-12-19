@@ -197,7 +197,7 @@ public class ClientSideHelper {
      */
     public void useTapeMeasure(BlockRayTraceResult rayTrace) {
         //Clear measurements if there are measurements
-        if(Minecraft.getInstance().player.isSneaking() && !ChiselsAndBits2.getInstance().getClient().tapeMeasurements.isEmpty()) {
+        if(Minecraft.getInstance().player.isCrouching() && !ChiselsAndBits2.getInstance().getClient().tapeMeasurements.isEmpty()) {
             ChiselsAndBits2.getInstance().getClient().tapeMeasurements.clear();
             return;
         }

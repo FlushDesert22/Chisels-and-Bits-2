@@ -7,7 +7,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import nl.dgoossens.chiselsandbits2.api.bit.RestrictionAPI;
-import nl.dgoossens.chiselsandbits2.client.culling.DummyEnvironmentWorldReader;
+import nl.dgoossens.chiselsandbits2.client.culling.DummyWorldReader;
 import nl.dgoossens.chiselsandbits2.common.blocks.ChiseledBlock;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -70,7 +70,7 @@ public class RestrictionAPIImpl implements RestrictionAPI {
         if (blk.getDefaultState().has(BlockStateProperties.HORIZONTAL_FACING)) return;
         if (blk.getDefaultState().has(BlockStateProperties.FACING_EXCEPT_UP)) return;
 
-        DummyEnvironmentWorldReader dummyWorld = new DummyEnvironmentWorldReader() {
+        DummyWorldReader dummyWorld = new DummyWorldReader() {
             @Override
             public BlockState getBlockState(BlockPos pos) {
                 if (pos.equals(BlockPos.ZERO)) return block;

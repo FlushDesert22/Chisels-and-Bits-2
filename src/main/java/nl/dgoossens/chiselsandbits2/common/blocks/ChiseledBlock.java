@@ -15,7 +15,6 @@ import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
@@ -58,11 +57,6 @@ public class ChiseledBlock extends Block implements BaseBlock {
         return true;
     }
 
-    @Override //Required for getting the destroyStage in the TER.
-    public boolean hasCustomBreakingProgress(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
@@ -93,11 +87,6 @@ public class ChiseledBlock extends Block implements BaseBlock {
         return BlockRenderType.ENTITYBLOCK_ANIMATED; //Set it to TESR only mode so there's no normal model.
     }
 
-    @Override
-    public boolean canRenderInLayer(BlockState state, BlockRenderLayer layer) {
-        return true;
-    }
-
     //Redirect getSoundType to the primary block.
     @Override
     public SoundType getSoundType(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
@@ -108,12 +97,6 @@ public class ChiseledBlock extends Block implements BaseBlock {
     @Override
     public float getSlipperiness(BlockState state, IWorldReader world, BlockPos pos, @Nullable Entity entity) {
         return getPrimaryState(world, pos).getSlipperiness(world, pos, entity);
-    }
-
-    //TODO make solid depending on a kind of fullBlock value just like C&B1, saves performance when you have large amounts of full block mixed blocks.
-    @Override
-    public boolean isSolid(BlockState state) {
-        return false; //We say it's never solid to avoid shouldSideBeRendered from returning false somehow.
     }
 
     /**
@@ -139,7 +122,7 @@ public class ChiseledBlock extends Block implements BaseBlock {
         TileEntity tileentity = worldIn.getTileEntity(pos);
         if (tileentity instanceof ChiseledBlockTileEntity) {
             ChiseledBlockTileEntity cte = (ChiseledBlockTileEntity) tileentity;
-            ItemEntity itementity = new ItemEntity(worldIn, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), cte.getItemStack());
+            ItemEntity itementity = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(), cte.getItemStack());
             itementity.setDefaultPickupDelay();
             worldIn.addEntity(itementity);
         }
@@ -180,14 +163,14 @@ public class ChiseledBlock extends Block implements BaseBlock {
 
             switch(VoxelType.getType(i)) {
                 case BLOCKSTATE:
-                    worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getBlockState(i)), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0, 0.0, 0.0, 1);
+                    worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getBlockState(i)), entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0, 0.0, 0.0, 1);
                     return true;
                 case FLUIDSTATE:
-                    worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getFluidState(i).getBlockState()), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0, 0.0, 0.0, 1);
+                    worldserver.spawnParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getFluidState(i).getBlockState()), entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0, 0.0, 0.0, 1);
                     return true;
                 case COLOURED:
                     Color c = BitUtil.getColourState(i);
-                    worldserver.spawnParticle(new RedstoneParticleData(((float)c.getRed())/255.0f, ((float)c.getGreen())/255.0f, ((float)c.getBlue())/255.0f, ((float)c.getAlpha())/255.0f), entity.posX, entity.posY, entity.posZ, numberOfParticles, 0.0, 0.0, 0.0, 1);
+                    worldserver.spawnParticle(new RedstoneParticleData(((float)c.getRed())/255.0f, ((float)c.getGreen())/255.0f, ((float)c.getBlue())/255.0f, ((float)c.getAlpha())/255.0f), entity.getX(), entity.getY(), entity.getZ(), numberOfParticles, 0.0, 0.0, 0.0, 1);
                     return true;
             }
         } catch(Exception x) {
@@ -209,7 +192,7 @@ public class ChiseledBlock extends Block implements BaseBlock {
                     addBlockDestroyEffects(manager, world, pos, BitUtil.getBlockState(i));
                     return true;
                 case FLUIDSTATE:
-                    addBlockDestroyEffects(manager, world, pos, BitUtil.getBlockState(i));
+                    addBlockDestroyEffects(manager, world, pos, BitUtil.getFluidState(i).getBlockState());
                     return true;
                 case COLOURED:
                     Color c = BitUtil.getColourState(i);
@@ -225,7 +208,7 @@ public class ChiseledBlock extends Block implements BaseBlock {
     //Add the block destroy effects exactly as the ParticleManager would.
     private void addBlockDestroyEffects(ParticleManager manager, World world, BlockPos pos, BlockState state) {
         if (!state.isAir(world, pos) && !state.addDestroyEffects(world, pos, manager))
-            addBlockDestroyEffects(world, pos, state, (p) -> manager.addEffect(p));
+            addBlockDestroyEffects(world, pos, state, manager::addEffect);
     }
 
     //Add the block destroy effects exactly as the ParticleManager would, but with a custom colour.
@@ -354,14 +337,14 @@ public class ChiseledBlock extends Block implements BaseBlock {
             Random random = new Random();
             switch(VoxelType.getType(i)) {
                 case BLOCKSTATE:
-                    world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getBlockState(i)), entity.posX + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.posY + 0.1D, entity.posZ + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
+                    world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getBlockState(i)), entity.getX() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.getY() + 0.1D, entity.getZ() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
                     return true;
                 case FLUIDSTATE:
-                    world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getFluidState(i).getBlockState()), entity.posX + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.posY + 0.1D, entity.posZ + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
+                    world.addParticle(new BlockParticleData(ParticleTypes.BLOCK, BitUtil.getFluidState(i).getBlockState()), entity.getX() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.getY() + 0.1D, entity.getZ() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
                     return true;
                 case COLOURED:
                     Color c = BitUtil.getColourState(i);
-                    world.addParticle(new RedstoneParticleData(((float)c.getRed())/255.0f, ((float)c.getGreen())/255.0f, ((float)c.getBlue())/255.0f, ((float)c.getAlpha())/255.0f), entity.posX + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.posY + 0.1D, entity.posZ + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
+                    world.addParticle(new RedstoneParticleData(((float)c.getRed())/255.0f, ((float)c.getGreen())/255.0f, ((float)c.getBlue())/255.0f, ((float)c.getAlpha())/255.0f), entity.getX() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, entity.getY() + 0.1D, entity.getZ() + ((double)random.nextFloat() - 0.5D) * (double)entity.getSize(entity.getPose()).width, vec3d.x * -4.0D, 1.5D, vec3d.z * -4.0D);
                     return true;
             }
         } catch(Exception x) {

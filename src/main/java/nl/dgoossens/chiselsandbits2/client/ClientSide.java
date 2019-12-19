@@ -59,7 +59,7 @@ public class ClientSide extends ClientSideHelper {
      * Setup all client side only things to register.
      */
     public void setup() {
-        ClientRegistry.bindTileEntitySpecialRenderer(ChiseledBlockTileEntity.class, new ChiseledBlockTER());
+        ClientRegistry.bindTileEntityRenderer(ChiselsAndBits2.getInstance().getBlocks().CHISELED_BLOCK_TILE, new ChiseledBlockTER());
         Minecraft.getInstance().getBlockColors().register(new ChiseledBlockColor(),
                 ChiselsAndBits2.getInstance().getBlocks().CHISELED_BLOCK);
         Minecraft.getInstance().getItemColors().register(new ChiseledBlockItemColor(),
@@ -201,7 +201,7 @@ public class ClientSide extends ClientSideHelper {
      */
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public static void drawHighlights(final DrawBlockHighlightEvent.HighlightBlock e) {
+    public static void drawHighlights(final DrawHighlightEvent.HighlightBlock e) {
         //Cancel if the draw blocks highlight method successfully rendered a highlight.
         if(ChiselsAndBits2.getInstance().getClient().drawBlockHighlight(e.getPartialTicks()))
             e.setCanceled(true);
@@ -232,7 +232,7 @@ public class ClientSide extends ClientSideHelper {
         final PlayerEntity player = Minecraft.getInstance().player;
         final ItemStack is = player.getHeldItemMainhand();
 
-        if (is.getItem() instanceof IItemScrollWheel && player.isSneaking()) {
+        if (is.getItem() instanceof IItemScrollWheel && player.isCrouching()) {
             ((IItemScrollWheel) is.getItem()).scroll(player, is, dwheel);
             me.setCanceled(true);
         }

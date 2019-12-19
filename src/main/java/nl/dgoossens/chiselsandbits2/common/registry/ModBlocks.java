@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModBlocks {
-    public final Block CHISELED_BLOCK = new ChiseledBlock(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.0F, 6.0F));
+    public final Block CHISELED_BLOCK = new ChiseledBlock(Block.Properties.create(Material.ROCK).doesNotBlockMovement().hardnessAndResistance(1.0F, 6.0F));
     public final TileEntityType<ChiseledBlockTileEntity> CHISELED_BLOCK_TILE = TileEntityType.Builder.create(ChiseledBlockTileEntity::new, CHISELED_BLOCK).build(null);
 
     @SubscribeEvent

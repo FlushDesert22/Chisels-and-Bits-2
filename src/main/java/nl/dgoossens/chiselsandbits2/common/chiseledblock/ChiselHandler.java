@@ -3,11 +3,9 @@ package nl.dgoossens.chiselsandbits2.common.chiseledblock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatisticsManager;
 import net.minecraft.stats.Stats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -16,7 +14,7 @@ import nl.dgoossens.chiselsandbits2.ChiselsAndBits2;
 import nl.dgoossens.chiselsandbits2.api.bit.VoxelWrapper;
 import nl.dgoossens.chiselsandbits2.api.item.IBitModifyItem;
 import nl.dgoossens.chiselsandbits2.api.item.IRotatableItem;
-import nl.dgoossens.chiselsandbits2.client.culling.DummyEnvironmentWorldReader;
+import nl.dgoossens.chiselsandbits2.client.culling.DummyWorldReader;
 import nl.dgoossens.chiselsandbits2.common.blocks.ChiseledBlock;
 import nl.dgoossens.chiselsandbits2.common.blocks.ChiseledBlockTileEntity;
 import nl.dgoossens.chiselsandbits2.common.chiseledblock.iterators.ChiselIterator;
@@ -175,7 +173,7 @@ public class ChiselHandler {
             }
         } else {
             //Other rotatable blocks
-            DummyEnvironmentWorldReader dummyWorld = new DummyEnvironmentWorldReader() {
+            DummyWorldReader dummyWorld = new DummyWorldReader() {
                 @Override
                 public BlockState getBlockState(BlockPos pos) {
                     if (pos.equals(BlockPos.ZERO)) return state;
